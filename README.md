@@ -33,7 +33,8 @@ from sqdr_cnn import SQDR_CNN
 T = 10
 IN_CHANNELS = 1
 NUM_CLASS = 10 # Change if needed
-N_QUBITS = 9 #
+N_QUBITS = 9
+NUM_BLOCK = 2
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 model = SQDR_CNN(T,
