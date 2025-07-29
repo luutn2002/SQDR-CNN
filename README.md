@@ -1,6 +1,6 @@
 # SQDR-CNN
 
-The official repository for "Hybrid Spiking-Quantum Data Re-upload Convolutional Neural Network"
+The official repository for "Parameter efficient hybrid spiking-quantum convolutional neural network with surrogate gradient and quantum data-reupload"
 
 ## Quickstart
 
@@ -22,9 +22,26 @@ or clone and modify locally:
 
 ```bash
 $ git clone https://github.com/luutn2002/SQDR-CNN.git
+$ cd sqdr_cnn
+$ pip install -r requirements.txt
 ```
 
-### Step 2: Import and usage
+### Step 2: Usage
+
+To ensure reproducibility, remember to use static random seed:
+```python
+import torch
+import numpy as np
+import random
+
+seed = 20200626
+
+torch.manual_seed(seed)
+random.seed(seed)
+np.random.seed(seed)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+```
 
 To use the model, we can simply import as a normal Pytorch model:
 
@@ -46,6 +63,77 @@ model = SQDR_CNN(T,
 
 output = model(torch.rand(T, IN_CHANNELS, 32, 32, device=DEVICE))
 ```
+
+### Step 3: Preprocessing
+
+Trained data are preprocessed with Pytorch predefined datasets, dataloader and transform:
+
+```python
+TRANSFORM_TRAIN = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.RandomHorizontalFlip(),
+])
+
+TRANSFORM_TEST = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+])
+
+train_set = torchvision.datasets.MNIST(
+        root=config["DATADIR"],
+        train=True,
+        transform=TRANSFORM_TRAIN,
+        download=True)
+
+val_set = torchvision.datasets.MNIST(
+        root=config["DATADIR"],
+        train=False,
+        transform=TRANSFORM_TEST,
+        download=True)
+
+
+if target_digits:
+    indices = [i for i, (_, label) in enumerate(train_set) if label in target_digits]
+    train_set = torch.utils.data.Subset(train_set, indices)
+
+    indices = [i for i, (_, label) in enumerate(val_set) if label in target_digits]
+    val_set = torch.utils.data.Subset(val_set, indices)
+
+train_loader = torch.utils.data.DataLoader(train_set, 
+                                           batch_size=int(config["BATCH_SIZE"]), 
+                                           shuffle=True,
+                                           generator=torch.Generator(device=config["DEVICE"]),
+                                           collate_fn=lambda x: tuple(x_.to(config["DEVICE"]) for x_ in torch.utils.data.dataloader.default_collate(x)))
+test_loader = torch.utils.data.DataLoader(val_set, 
+                                          batch_size=int(config["BATCH_SIZE"]),
+                                          generator=torch.Generator(device=config["DEVICE"]),
+                                          collate_fn=lambda x: tuple(x_.to(config["DEVICE"]) for x_ in torch.utils.data.dataloader.default_collate(x)))
+```
+
+Encoder initializing with SpikingJelly is not needed, as we already include it within the model:
+
+```python
+class SQDR_CNN(nn.Module):
+        ... # Init fields witin class
+        self.encoder = encoding.WeightedPhaseEncoder(K=8)
+        
+    def forward(self, x):
+        ... # Data inference
+        self.encoder.reset() # Encoder automatically reset after inference
+        return x
+```
+## Used datasets
+
+All used dataset is included in [torchvision](https://docs.pytorch.org/vision/main/datasets.html).
+
+## License
+
+Source code is licensed under MIT License.
+
+## Contribution guidelines
+
+Please open an issue or pull request if there are bugs or contribution to be made. Thank you.
+
+## Others
 Pytorch [guides](https://docs.pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html), Pennylane [guides](https://pennylane.ai/) and SpikingJelly [guides](https://spikingjelly.readthedocs.io/zh-cn/latest/#index-en) are available.
 
 > Note: Aside from Pennylane implementation, we also have [Torchquantum](https://github.com/mit-han-lab/torchquantum) implementation of the PQC modules (around 100x faster but does not have similar noise model implementation in Pennylane). Local cloning for modification is better in this scenario.
