@@ -1,1 +1,8 @@
 spikingjelly==0.0.0.0.14
+torch
+matplotlib
+numpy
+tqdm
+torchvision
+scipy
+tensorboard
