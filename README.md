@@ -73,6 +73,9 @@ output = model(torch.rand(T, IN_CHANNELS, 32, 32, device=DEVICE))
 Trained data are preprocessed with Pytorch predefined datasets, dataloader and transform:
 
 ```python
+DATADIR = "./Datasets"
+BATCH_SIZE = 16
+
 TRANSFORM_TRAIN = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
     torchvision.transforms.RandomHorizontalFlip(),
@@ -83,13 +86,13 @@ TRANSFORM_TEST = torchvision.transforms.Compose([
 ])
 
 train_set = torchvision.datasets.MNIST(
-        root=config["DATADIR"],
+        root=DATADIR,
         train=True,
         transform=TRANSFORM_TRAIN,
         download=True)
 
 val_set = torchvision.datasets.MNIST(
-        root=config["DATADIR"],
+        root=DATADIR,
         train=False,
         transform=TRANSFORM_TEST,
         download=True)
@@ -103,14 +106,14 @@ if target_digits:
     val_set = torch.utils.data.Subset(val_set, indices)
 
 train_loader = torch.utils.data.DataLoader(train_set, 
-                                           batch_size=int(config["BATCH_SIZE"]), 
+                                           batch_size=BATCH_SIZE, 
                                            shuffle=True,
-                                           generator=torch.Generator(device=config["DEVICE"]),
-                                           collate_fn=lambda x: tuple(x_.to(config["DEVICE"]) for x_ in torch.utils.data.dataloader.default_collate(x)))
+                                           generator=torch.Generator(device=DEVICE),
+                                           collate_fn=lambda x: tuple(x_.to(DEVICE) for x_ in torch.utils.data.dataloader.default_collate(x)))
 test_loader = torch.utils.data.DataLoader(val_set, 
-                                          batch_size=int(config["BATCH_SIZE"]),
-                                          generator=torch.Generator(device=config["DEVICE"]),
-                                          collate_fn=lambda x: tuple(x_.to(config["DEVICE"]) for x_ in torch.utils.data.dataloader.default_collate(x)))
+                                          batch_size=BATCH_SIZE,
+                                          generator=torch.Generator(device=DEVICE),
+                                          collate_fn=lambda x: tuple(x_.to(DEVICE) for x_ in torch.utils.data.dataloader.default_collate(x)))
 ```
 
 Encoder initializing with SpikingJelly is not needed, as we already include it within the model:
