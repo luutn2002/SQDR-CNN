@@ -1,6 +1,6 @@
 # SQDR-CNN
 
-The official repository for "Parameter efficient hybrid spiking-quantum convolutional neural network with surrogate gradient and quantum data-reupload"
+The official repository for [Parameter efficient hybrid spiking-quantum convolutional neural network with surrogate gradient and quantum data-reupload](https://peerj.com/articles/cs-3554/)
 
 ## Overview
 
@@ -146,14 +146,14 @@ Pytorch [guides](https://docs.pytorch.org/tutorials/beginner/basics/quickstart_t
 > Note: Aside from Pennylane implementation, we also have [Torchquantum](https://github.com/mit-han-lab/torchquantum) implementation of the PQC modules (around 100x faster but does not have similar noise model implementation in Pennylane). Local cloning for modification is better in this scenario.
 
 ## Citations
-Paper is under review. Temporarily please cite as:
 ```bibtex
-@misc{luu2025parameter,
-  author = {Luu T. Nhan},
-  title = {Parameter efficient hybrid spiking-quantum convolutional neural network with surrogate gradient and quantum data-reupload},
-  year = {2025},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/luutn2002/SQDR-CNN}},
+@article{luu2026parameter,
+  title={Parameter efficient hybrid spiking-quantum convolutional neural network with surrogate gradient and quantum data-reupload},
+  author={Luu, Nhan Trong and Luu, Duong Trung and Pham, Nam Ngoc and Truong, Thang Cong},
+  journal={PeerJ Computer Science},
+  volume={12},
+  pages={e3554},
+  year={2026},
+  publisher={PeerJ Inc.}
 }
 ```
